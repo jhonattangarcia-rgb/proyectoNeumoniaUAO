@@ -11,7 +11,7 @@
 Abran una terminal en su computadora, naveguen hasta su carpeta de proyectos y ejecuten:
 
 ```powershell
-git clone github.com
+git clone https://github.com/jhonattangarcia-rgb/proyectoNeumoniaUAO.git
 cd proyectoNeumoniaUAO
 ```
 
