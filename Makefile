@@ -2,7 +2,7 @@ PYTHON ?= python
 PIP ?= $(PYTHON) -m pip
 APP ?= detector_neumonia.py
 DOCKER_IMAGE ?= uao-neumonia
-MODEL ?= WilhemNet86.h5
+MODEL ?= conv_MLP_84.h5
 
 .DEFAULT_GOAL := help
 
@@ -30,7 +30,7 @@ run:
 	$(PYTHON) $(APP)
 
 lint:
-	$(PYTHON) -m py_compile $(APP)
+	@$(PYTHON) -m py_compile $(APP) && echo Sintaxis OK: $(APP) no tiene errores estructurales.
 
 test:
 	$(PYTHON) -m unittest discover -v
