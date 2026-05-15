@@ -17,42 +17,35 @@ cd proyectoNeumoniaUAO
 
 _Abran esta carpeta recién descargada directamente en su **Visual Studio Code** (`Archivo > Abrir carpeta`)._
 
-### 2. Crear el Entorno Virtual
+### 2. Instalar UV (Si no lo tienen)
 
-Para asegurar que las librerías de Inteligencia Artificial como TensorFlow no entren en conflicto con sus computadoras, creemos un entorno aislado de Python ejecutando en la terminal de VS Code:
+UV es mucho más rápido que pip y gestiona los entornos virtuales automáticamente. Si no lo tienen, instálenlo (una sola vez en su PC):
 
 ```powershell
-python -m venv neumonia-env
+powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
 ```
 
-### 3. Activar el Entorno (Permisos de Windows)
+### 3. Configurar el Entorno e Instalar Dependencias
 
-Si usan Windows (PowerShell), el sistema por defecto bloquea la activación. Ejecuten estas dos líneas en orden para habilitar permisos y encender el entorno:
+A diferencia de antes, ya no necesitan crear el entorno manual ni activar scripts de permisos. Solo ejecuten en la raíz del proyecto:
 
 ```powershell
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
-.\neumonia-env\Scripts\Activate.ps1
+uv sync
 ```
 
-_Sabrán que funcionó porque verán la etiqueta `(neumonia-env)` al inicio de la línea de comandos._
+_Esto creará la carpeta `.venv` con todas las librerías necesarias (TensorFlow, OpenCV, etc.) de forma ultra rápida._
 
-### 4. Actualizar Pip e Instalar Dependencias Unificadas
+### 4. Probar la Aplicación
 
-Con el entorno `(neumonia-env)` activo, actualicen el gestor e instalen todo el paquete de librerías del proyecto de un solo golpe:
+Para ejecutar el proyecto usando el entorno de UV, usen:
 
 ```powershell
-python.exe -m pip install --upgrade pip
-pip install -r requirements.txt
+uv run detector_neumonia.py
 ```
 
-_(Esto descargará automáticamente TensorFlow, OpenCV, PyDicom y las demás herramientas con las versiones exactas de desarrollo)._
-
-### 5. Probar la Aplicación
-
-Para comprobar que todo el entorno quedó perfectamente blindado, ejecuten:
-
+O usen el Makefile simplificado:
 ```powershell
-python detector_neumonia.py
+make run
 ```
 
 ---
@@ -105,5 +98,5 @@ git push origin feature/nombre-de-tu-tarea
 ## 🚨 Reglas de Oro del Repositorio
 
 1. **Los modelos `.h5` no se suben:** Los archivos de pesos (`conv_MLP_84.h5` y `WilhemNet86.h5`) ya están en el `.gitignore`. No intenten forzar su subida ya que pesan demasiado.
-2. **La carpeta `neumonia-env/` no se sube:** Las librerías locales se quedan en su máquina. Si agregan una librería nueva, avisen al grupo para actualizar el `requirements.txt`.
+2. **La carpeta `.venv/` no se sube:** Las librerías locales se quedan en su máquina. Si agregan una librería nueva, usen `uv add nombre-libreria` para que se actualice el `pyproject.toml`.
 3. **Revisión en Equipo (Pull Requests):** Una vez suban su rama a GitHub, entren a la web y creen un _Pull Request_ para que los demás compañeros revisen los cambios antes de mezclarlos con la rama `main`.

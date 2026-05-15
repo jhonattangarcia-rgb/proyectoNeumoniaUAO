@@ -1,9 +1,24 @@
-FROM python:latest
+FROM python:3.11-slim
 
-RUN apt-get update -y && \
-    apt-get install python3-opencv -y 
+# Instalar dependencias del sistema para OpenCV
+RUN apt-get update && apt-get install -y \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
+    && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /home/src
+# Instalar uv
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
-COPY . ./
-RUN pip install -r requirements.txt
+WORKDIR /app
+
+# Copiar archivos de configuración de dependencias
+COPY pyproject.toml uv.lock ./
+
+# Instalar dependencias (sin el proyecto)
+RUN uv sync --frozen --no-install-project
+
+# Copiar el resto del código
+COPY . .
+
+# Comando por defecto
+CMD ["uv", "run", "detector_neumonia.py"]
