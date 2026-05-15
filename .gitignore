@@ -130,7 +130,11 @@ dmypy.json
 
 # Modelos
 conv_MLP_84.h5
-WilhemNet86.h5
+
+# Reportes locales e historial
+Reporte_*.jpg
+Reporte_*.pdf
+historial.csv
 
 #Entorno
 neumonia-env/
