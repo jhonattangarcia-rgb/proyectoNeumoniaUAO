@@ -59,20 +59,17 @@ def grad_cam(array):
         )
 
     # MEJORA:
-    # Detecta en tiempo real la estructura de entrada del modelo. Si el equipo
-    # cambia el archivo por un modelo más viejo o más nuevo en el futuro, este
-    # bloque adapta los datos automáticamente y evita que el programa se rompa.
-    try:
-        input_names = getattr(model, "input_names", [])
-        input_data = [img_tensor] if input_names else img_tensor
-    except Exception:
-        input_data = img_tensor
+    # Detecta la estructura de entrada del modelo según `model.inputs`.
+    # Para un modelo funcional, `model.inputs` es una lista de tensores.
+    # En este proyecto el modelo tiene una sola entrada, por lo que debemos
+    # pasarla como lista a `grad_model` si el modelo espera una entrada en lista.
+    input_data = [img_tensor] if isinstance(model.inputs, (list, tuple)) else img_tensor
 
     try:
         # MEJORA: Arquitectura moderna de Keras 2/3. Crea un modelo de doble salida
         # dinámico para extraer los mapas internos sin usar funciones de backend eliminadas.
         grad_model = tf.keras.models.Model(
-            [model.inputs], [model.get_layer(last_conv_layer_name).output, model.output]
+            model.inputs, [model.get_layer(last_conv_layer_name).output, model.output]
         )
 
         # MEJORA: Uso de GradientTape nativo de TensorFlow. Registra las operaciones
@@ -129,12 +126,8 @@ def predict(array):
     img_tensor = preprocess(array)
     model = model_fun()
 
-    # Manejo robusto de nombres de input en Keras 3
-    try:
-        input_names = getattr(model, "input_names", [])
-        input_data = [img_tensor] if input_names else img_tensor
-    except Exception:
-        input_data = img_tensor
+    # Manejo robusto de la estructura de entrada del modelo.
+    input_data = [img_tensor] if isinstance(model.inputs, (list, tuple)) else img_tensor
 
     # MEJORA: Se usa 'predict_on_batch' para optimizar la interfaz gráfica.
     # Procesa la radiografía de forma directa e instantánea en la memoria RAM,

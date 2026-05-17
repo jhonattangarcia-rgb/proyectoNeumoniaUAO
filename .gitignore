@@ -135,6 +135,7 @@ conv_MLP_84.h5
 Reporte_*.jpg
 Reporte_*.pdf
 historial.csv
+solucion_warnings.md
 
 #Entorno
 neumonia-env/
