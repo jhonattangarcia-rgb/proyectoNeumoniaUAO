@@ -2,13 +2,13 @@
 
 # Standard library imports
 import csv
+import os
 from tkinter import Tk, Text, StringVar, END
 from tkinter import ttk, font, filedialog
 from tkinter.messagebox import askokcancel, showinfo, WARNING
 
 # Third-party imports
-from PIL import ImageTk, Image as PILImage
-import tkcap
+from PIL import ImageGrab, ImageTk, Image as PILImage
 
 # Local application imports
 from app.read_img import read_dicom_file, read_jpg_file
@@ -127,15 +127,46 @@ class App:
 
     def create_pdf(self) -> None:
         """Capture the current interface area and save it as a PDF file."""
+        pdf_path = filedialog.asksaveasfilename(
+            title="Guardar reporte como",
+            defaultextension=".pdf",
+            filetypes=[("PDF files", "*.pdf")],
+            initialfile=f"Reporte_{self.reportID}.pdf",
+        )
+        if not pdf_path:
+            return
+
+        image_path = filedialog.asksaveasfilename(
+            title="Guardar imagen como",
+            defaultextension=".jpg",
+            filetypes=[("JPEG files", "*.jpg")],
+            initialfile=f"Reporte_{self.reportID}.jpg",
+        )
+
         try:
-            cap = tkcap.CAP(self.root)
-            filename = f"Reporte_{self.reportID}.jpg"
-            cap.capture(filename)
-            img = PILImage.open(filename).convert("RGB")
-            pdf_path = f"Reporte_{self.reportID}.pdf"
-            img.save(pdf_path)
+            self.root.update()
+            bbox = (
+                self.root.winfo_rootx(),
+                self.root.winfo_rooty(),
+                self.root.winfo_rootx() + self.root.winfo_width(),
+                self.root.winfo_rooty() + self.root.winfo_height(),
+            )
+            img = ImageGrab.grab(bbox).convert("RGB")
+            img.save(pdf_path, "PDF", resolution=100.0)
+
+            saved_image = "not saved"
+            if image_path:
+                img.save(image_path, "JPEG")
+                saved_image = image_path
+
             self.reportID += 1
-            showinfo(title="PDF", message=f"Generado: {pdf_path}")
+            showinfo(
+                title="PDF",
+                message=(
+                    f"PDF Generado ✅,\n"
+                    f"Imagen guardada ✅"
+                ),
+            )
         except Exception as e:
             showinfo(title="Error PDF", message=f"Error: {e}")
 
