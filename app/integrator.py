@@ -1,12 +1,23 @@
+"""High-level prediction logic for the pneumonia detection app."""
 
-
-from app.load_model import model_fun
-from app.preprocess_img import preprocess
-from app.grad_cam import grad_cam
+# Third-party imports
 import numpy as np
 
+# Local application imports
+from app.grad_cam import grad_cam
+from app.load_model import model_fun
+from app.preprocess_img import preprocess
 
-def predict(array):
+
+def predict(array: np.ndarray) -> tuple[str, float, np.ndarray]:
+    """Run the model and return prediction results and a heatmap.
+
+    Args:
+        array: Input image array for inference.
+
+    Returns:
+        A tuple with label, probability, and the heatmap image array.
+    """
     img_tensor = preprocess(array)
     model = model_fun()
 

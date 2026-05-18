@@ -1,16 +1,24 @@
+"""Graphical application entry point for the pneumonia detection app."""
+
+# Standard library imports
 import csv
-from PIL import ImageTk, Image as PILImage
 from tkinter import Tk, Text, StringVar, END
 from tkinter import ttk, font, filedialog
 from tkinter.messagebox import askokcancel, showinfo, WARNING
+
+# Third-party imports
+from PIL import ImageTk, Image as PILImage
 import tkcap
 
-from app.read_img import read_dicom_file, read_jpg_file 
+# Local application imports
+from app.read_img import read_dicom_file, read_jpg_file
 from app.integrator import predict
 
-
 class App:
-    def __init__(self):
+    """Main GUI class for the pneumonia detection application."""
+
+    def __init__(self) -> None:
+        """Initialize the application window and internal state."""
         self.root = Tk()
         self.root.title("Herramienta para la detección rápida de neumonía")
         fonti = font.Font(weight="bold")
@@ -24,7 +32,12 @@ class App:
         self.heatmap = None
         self.root.mainloop()
 
-    def setup_ui(self, fonti):
+    def setup_ui(self, fonti: font.Font) -> None:
+        """Create and configure the main Tkinter widgets.
+
+        Args:
+            fonti: Font object used for widget labels.
+        """
         ttk.Label(self.root, text="Imagen Radiográfica", font=fonti).place(x=110, y=65)
         ttk.Label(self.root, text="Imagen con Heatmap", font=fonti).place(x=545, y=65)
         ttk.Label(self.root, text="Resultado:", font=fonti).place(x=500, y=350)
@@ -60,7 +73,8 @@ class App:
         )
         self.text1.focus_set()
 
-    def load_img_file(self):
+    def load_img_file(self) -> None:
+        """Load an image from disk and display it in the GUI."""
         filepath = filedialog.askopenfilename(
             title="Seleccionar imagen",
             filetypes=(
@@ -83,7 +97,8 @@ class App:
             except Exception as e:
                 showinfo(title="Error", message=f"No se pudo cargar la imagen: {e}")
 
-    def run_model(self):
+    def run_model(self) -> None:
+        """Run the model on the loaded image and display results."""
         try:
             self.label, self.proba, self.heatmap = predict(self.array)
             img_h = PILImage.fromarray(self.heatmap)
@@ -98,7 +113,8 @@ class App:
         except Exception as e:
             showinfo(title="Error en Predicción", message=f"Hubo un problema: {e}")
 
-    def save_results_csv(self):
+    def save_results_csv(self) -> None:
+        """Save the current prediction results into the CSV history file."""
         if not self.label:
             return
         try:
@@ -109,7 +125,8 @@ class App:
         except Exception as e:
             showinfo(title="Error", message=f"No se pudo guardar: {e}")
 
-    def create_pdf(self):
+    def create_pdf(self) -> None:
+        """Capture the current interface area and save it as a PDF file."""
         try:
             cap = tkcap.CAP(self.root)
             filename = f"Reporte_{self.reportID}.jpg"
@@ -122,7 +139,8 @@ class App:
         except Exception as e:
             showinfo(title="Error PDF", message=f"Error: {e}")
 
-    def delete(self):
+    def delete(self) -> None:
+        """Reset the form and clear loaded image data from the GUI."""
         if askokcancel(
             title="Confirmación", message="¿Borrar todos los datos?", icon=WARNING
         ):

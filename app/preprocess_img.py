@@ -1,7 +1,19 @@
+"""Image preprocessing utilities used before model inference."""
+
+# Third-party imports
 import cv2
 import numpy as np
 
-def preprocess(array):
+
+def preprocess(array: np.ndarray) -> np.ndarray:
+    """Resize, normalize, and prepare an image array for model input.
+
+    Args:
+        array: Input image array in BGR or grayscale format.
+
+    Returns:
+        A preprocessed array shaped for the model.
+    """
     array = cv2.resize(array, (512, 512))
     # Se valida que la imagen tenga 3 canales antes de convertir a escala de grises, para evitar errores con imágenes ya en escala de grises
     if len(array.shape) == 3:

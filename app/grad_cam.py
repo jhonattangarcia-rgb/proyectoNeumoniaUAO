@@ -1,10 +1,24 @@
-from app.preprocess_img import preprocess
-from app.load_model import model_fun
+"""Grad-CAM support for the pneumonia detection application."""
+
+# Third-party imports
 import cv2
 import numpy as np
 import tensorflow as tf
 
-def grad_cam(array):
+# Local application imports
+from app.load_model import model_fun
+from app.preprocess_img import preprocess
+
+
+def grad_cam(array: np.ndarray) -> np.ndarray:
+    """Generate a Grad-CAM overlay image for the input image.
+
+    Args:
+        array: Input image array used for prediction.
+
+    Returns:
+        An RGB image array with the heatmap overlay.
+    """
     img_tensor = preprocess(array)
     model = model_fun()
 

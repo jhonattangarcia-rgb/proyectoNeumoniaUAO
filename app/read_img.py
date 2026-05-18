@@ -1,10 +1,23 @@
-import pydicom as dicom
-import numpy as np
+"""Image loading utilities for DICOM and standard image files."""
+
+from typing import Tuple
+
+# Third-party imports
 import cv2
+import numpy as np
+import pydicom as dicom
 from PIL import Image as PILImage
 
 
-def read_dicom_file(path):
+def read_dicom_file(path: str) -> Tuple[np.ndarray, PILImage]:
+    """Read a DICOM file and return the image as array and a PIL image.
+
+    Args:
+        path: Path to a DICOM file.
+
+    Returns:
+        A tuple containing the RGB image array and a PIL Image object.
+    """
     try:
         # MEJORA: Uso de la API moderna de PyDicom. Reemplaza el comando obsoleto 'read_file'.
         ds = dicom.dcmread(path)
@@ -28,8 +41,17 @@ def read_dicom_file(path):
 
     except Exception as e:
         raise ValueError(f"Error leyendo DICOM: {e}")
-    
-def read_jpg_file(path):
+
+
+def read_jpg_file(path: str) -> Tuple[np.ndarray, PILImage]:
+    """Read a JPG or PNG file and return the image as array and a PIL image.
+
+    Args:
+        path: Path to a JPG, JPEG, or PNG file.
+
+    Returns:
+        A tuple containing the RGB image array and a PIL Image object.
+    """
     try:
         # MEJORA: Blindaje contra tildes y caracteres especiales en la ruta.
         img_data = np.fromfile(path, np.uint8)
