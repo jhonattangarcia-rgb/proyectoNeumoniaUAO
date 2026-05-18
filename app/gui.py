@@ -115,7 +115,24 @@ class App:
 
     def save_results_csv(self) -> None:
         """Save the current prediction results into the CSV history file."""
+        patient_id = self.ID.get().strip()
+        if not patient_id:
+            showinfo(
+                title="Cédula requerida",
+                message="Debe ingresar la cédula del paciente antes de guardar los resultados.",
+            )
+            return
+        if not patient_id.isdigit():
+            showinfo(
+                title="Cédula inválida",
+                message="La cédula debe contener solo números enteros.",
+            )
+            return
         if not self.label:
+            showinfo(
+                title="Predicción requerida",
+                message="Debe ejecutar una predicción antes de guardar los resultados.",
+            )
             return
         try:
             with open("historial.csv", "a", newline="") as csvfile:
@@ -127,11 +144,26 @@ class App:
 
     def create_pdf(self) -> None:
         """Capture the current interface area and save it as a PDF file."""
+        patient_id = self.ID.get().strip()
+        if not patient_id:
+            showinfo(
+                title="Cédula requerida",
+                message="Debe ingresar la cédula del paciente antes de generar el PDF.",
+            )
+            return
+        if not patient_id.isdigit():
+            showinfo(
+                title="Cédula inválida",
+                message="La cédula debe contener solo números enteros.",
+            )
+            return
+        patient_id = patient_id.replace(" ", "_")
+
         pdf_path = filedialog.asksaveasfilename(
             title="Guardar reporte como",
             defaultextension=".pdf",
             filetypes=[("PDF files", "*.pdf")],
-            initialfile=f"Reporte_{self.reportID}.pdf",
+            initialfile=f"Reporte_{patient_id}_{self.reportID}.pdf",
         )
         if not pdf_path:
             return
@@ -140,7 +172,7 @@ class App:
             title="Guardar imagen como",
             defaultextension=".jpg",
             filetypes=[("JPEG files", "*.jpg")],
-            initialfile=f"Reporte_{self.reportID}.jpg",
+            initialfile=f"Reporte_{patient_id}_{self.reportID}.jpg",
         )
 
         try:
