@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import os
+os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
+
 import csv
 import cv2
 import numpy as np
@@ -12,7 +15,6 @@ from tkinter import ttk, font, filedialog
 from tkinter.messagebox import askokcancel, showinfo, WARNING
 from functools import lru_cache
 import tkcap
-import os
 
 # Configuración de compatibilidad
 MODEL_PATH = "conv_MLP_84.h5"
