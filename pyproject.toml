@@ -3,7 +3,7 @@ name = "uao-neumonia"
 version = "0.1.0"
 description = "Herramienta para la detección rápida de neumonía usando IA"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.11,<3.13"
 dependencies = [
     "tensorflow==2.21.0",
     "keras==3.14.1",
