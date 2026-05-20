@@ -12,7 +12,7 @@ Abran una terminal en su computadora, naveguen hasta su carpeta de proyectos y e
 
 ```powershell
 git clone https://github.com/jhonattangarcia-rgb/proyectoNeumoniaUAO.git
-cd proyectoNeumoniaUAO
+cd UAO-Neumonia
 ```
 
 _Abran esta carpeta recién descargada directamente en su **Visual Studio Code** (`Archivo > Abrir carpeta`)._

@@ -9,7 +9,7 @@ import pydicom as dicom
 from PIL import Image as PILImage
 
 
-def read_dicom_file(path: str) -> Tuple[np.ndarray, PILImage]:
+def read_dicom_file(path: str) -> Tuple[np.ndarray, PILImage.Image]:
     """Read a DICOM file and return the image as array and a PIL image.
 
     Args:
@@ -43,7 +43,7 @@ def read_dicom_file(path: str) -> Tuple[np.ndarray, PILImage]:
         raise ValueError(f"Error leyendo DICOM: {e}")
 
 
-def read_jpg_file(path: str) -> Tuple[np.ndarray, PILImage]:
+def read_jpg_file(path: str) -> Tuple[np.ndarray, PILImage.Image]:
     """Read a JPG or PNG file and return the image as array and a PIL image.
 
     Args:
