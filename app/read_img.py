@@ -19,12 +19,14 @@ def read_dicom_file(path: str) -> Tuple[np.ndarray, PILImage.Image]:
         A tuple containing the RGB image array and a PIL Image object.
     """
     try:
-        # MEJORA: Uso de la API moderna de PyDicom. Reemplaza el comando obsoleto 'read_file'.
+        # MEJORA: Uso de la API moderna de PyDicom. Reemplaza el comando obsoleto
+        # 'read_file'.
         ds = dicom.dcmread(path)
         img_array = ds.pixel_array
 
         # MEJORA: Escudo contra división por cero en formatos médicos.
-        # Si el archivo DICOM viene vacío o corrupto (máximo = 0), el código divide por 1.
+        # Si el archivo DICOM viene vacío o corrupto (máximo = 0), el código divide
+        # por 1.
         # Esto previene alertas ruidosas y caídas de la interfaz gráfica de Tkinter.
         img_norm = (
             np.maximum(img_array, 0) / (img_array.max() if img_array.max() != 0 else 1)
@@ -34,8 +36,10 @@ def read_dicom_file(path: str) -> Tuple[np.ndarray, PILImage.Image]:
         img_rgb = cv2.cvtColor(img_uint8, cv2.COLOR_GRAY2RGB)
 
         # MEJORA: Corrección del bug de pantalla negra en la interfaz de usuario.
-        # Convierte los datos médicos crudos de 16 bits a formato RGB estándar de 8 bits.
-        # Garantiza que Tkinter pueda dibujar la radiografía con contraste óptimo en pantalla.
+        # Convierte los datos médicos crudos de 16 bits a formato RGB estándar de
+        # 8 bits.
+        # Garantiza que Tkinter pueda dibujar la radiografía con contraste óptimo
+        # en pantalla.
         img2show = PILImage.fromarray(img_rgb)
         return img_rgb, img2show
 
