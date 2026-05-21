@@ -2,7 +2,6 @@
 
 # Standard library imports
 import csv
-import os
 from tkinter import Tk, Text, StringVar, END
 from tkinter import ttk, font, filedialog
 from tkinter.messagebox import askokcancel, showinfo, WARNING
@@ -13,6 +12,7 @@ from PIL import ImageGrab, ImageTk, Image as PILImage
 # Local application imports
 from app.read_img import read_dicom_file, read_jpg_file
 from app.integrator import predict
+
 
 class App:
     """Main GUI class for the pneumonia detection application."""
@@ -186,18 +186,13 @@ class App:
             img = ImageGrab.grab(bbox).convert("RGB")
             img.save(pdf_path, "PDF", resolution=100.0)
 
-            saved_image = "not saved"
             if image_path:
                 img.save(image_path, "JPEG")
-                saved_image = image_path
 
             self.reportID += 1
             showinfo(
                 title="PDF",
-                message=(
-                    f"PDF Generado ✅,\n"
-                    f"Imagen guardada ✅"
-                ),
+                message=("PDF Generado ✅,\nImagen guardada ✅"),
             )
         except Exception as e:
             showinfo(title="Error PDF", message=f"Error: {e}")
