@@ -119,7 +119,8 @@ class App:
         if not patient_id:
             showinfo(
                 title="Cédula requerida",
-                message="Debe ingresar la cédula del paciente antes de guardar los resultados.",
+                message="Debe ingresar la cédula del paciente antes de guardar los "
+                "resultados.",
             )
             return
         if not patient_id.isdigit():
