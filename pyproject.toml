@@ -14,3 +14,8 @@ dependencies = [
     "pillow==12.2.0",
     "tkcap==0.0.4",
 ]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.15.14",
+]
