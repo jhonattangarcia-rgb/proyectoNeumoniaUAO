@@ -19,3 +19,15 @@ dependencies = [
 dev = [
     "ruff>=0.15.14",
 ]
+
+[tool.ruff]
+# Evitamos analizar librerías del sistema en el entorno virtual
+extend-exclude = [".venv", "__pycache__", "build", "dist"]
+
+[tool.ruff.lint]
+# E = Estilo PEP8, F = Errores lógicos, D = Validación de Docstrings
+select = ["E", "F", "D"]
+
+[tool.ruff.lint.pydocstyle]
+# Aquí es donde se declara de forma correcta el estilo Google exigido
+convention = "google"

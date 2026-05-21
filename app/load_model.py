@@ -10,7 +10,9 @@ import tensorflow as tf
 # Compatibility configuration
 MODEL_PATH: str = "conv_MLP_84.h5"
 
-# Se define una función con caché para cargar el modelo una sola vez. Se maneja la ausencia del modelo
+
+# Se define una función con caché para cargar el modelo una sola vez. Se maneja
+# la ausencia del modelo
 @lru_cache(maxsize=1)
 def model_fun(model_path: str = MODEL_PATH) -> tf.keras.Model:
     """Load and return the saved TensorFlow model.
