@@ -59,7 +59,7 @@ Interfaz gráfica
 **Paso 1: Clonar el repositorio**
 
 ```bash
-git clone https://github.com/dalquinones/UAO-Neumonia
+git clone https://github.com/jhonattangarcia-rgb/proyectoNeumoniaUAO.git
 cd proyectoNeumoniaUAO
 ```
 
