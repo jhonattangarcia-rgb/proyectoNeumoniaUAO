@@ -35,7 +35,8 @@ def predict(array: np.ndarray) -> tuple[str, float, np.ndarray]:
     prediction = np.argmax(preds[0])
     proba = np.max(preds[0]) * 100
 
-    # MEJORA: Diccionario de etiquetas. Reemplaza el bloque 'if-elif' por un diccionario de mapeo directo
+    # MEJORA: Diccionario de etiquetas. Reemplaza el bloque 'if-elif' por un
+    # diccionario de mapeo directo
     labels = {0: "bacteriana", 1: "normal", 2: "viral"}
     label = labels.get(prediction, "desconocido")
     heatmap = grad_cam(array)

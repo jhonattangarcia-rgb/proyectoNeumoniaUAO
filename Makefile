@@ -43,7 +43,7 @@ run:
 lint:
 	@chcp 65001 > nul
 	@echo 🛡️  Validando estructura básica de Python...
-	@$(PYTHON) -m py_compile $(APP) && echo "Sintaxis OK: $(APP) no tiene errores estructurales."
+	@$(PYTHON) -m compileall . -q -x "\.venv|build|dist" && echo "Sintaxis OK, no tiene errores estructurales."
 	@echo 🧹 Analizando calidad y estilo con Ruff...
 	$(UV) run ruff check .
 
