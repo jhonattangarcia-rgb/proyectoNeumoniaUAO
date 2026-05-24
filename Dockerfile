@@ -2,7 +2,7 @@ FROM python:3.11-slim
 
 # Instalar dependencias del sistema para OpenCV
 RUN apt-get update && apt-get install -y \
-    libgl1-mesa-glx \
+    libgl1 \
     libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
@@ -17,8 +17,12 @@ COPY pyproject.toml uv.lock ./
 # Instalar dependencias (sin el proyecto)
 RUN uv sync --frozen --no-install-project
 
-# Copiar el resto del código
-COPY . .
+# Copiar el código de la aplicación
+COPY detector_neumonia.py ./
+COPY app/ ./app/
+COPY conv_MLP_84.h5 ./
 
-# Comando por defecto
-CMD ["uv", "run", "detector_neumonia.py"]
+## Mantener el contenedor activo sin ejecutar la app automáticamente.
+ENV COMMAND_PROMPT_MODE=true
+CMD ["tail", "-f", "/dev/null"]
+
