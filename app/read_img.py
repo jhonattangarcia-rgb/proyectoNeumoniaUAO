@@ -1,5 +1,6 @@
 """Image loading utilities for DICOM and standard image files."""
 
+from pathlib import Path
 from typing import Tuple
 
 # Third-party imports
@@ -48,10 +49,10 @@ def read_dicom_file(path: str) -> Tuple[np.ndarray, PILImage.Image]:
 
 
 def read_jpg_file(path: str) -> Tuple[np.ndarray, PILImage.Image]:
-    """Read a JPG or PNG file and return the image as array and a PIL image.
+    """Read a JPG or JPEG file and return the image as array and a PIL image.
 
     Args:
-        path: Path to a JPG, JPEG, or PNG file.
+        path: Path to a JPG or JPEG file.
 
     Returns:
         A tuple containing the RGB image array and a PIL Image object.
@@ -72,5 +73,72 @@ def read_jpg_file(path: str) -> Tuple[np.ndarray, PILImage.Image]:
 
         img2show = PILImage.fromarray(img_rgb)
         return img_rgb, img2show
+
     except Exception as e:
         raise ValueError(f"No se pudo cargar la imagen en {path}. Detalle: {e}")
+
+
+def read_png_file(path: str) -> Tuple[np.ndarray, PILImage.Image]:
+    """Read a PNG file and return the image as array and a PIL image.
+
+    Args:
+        path: Path to a PNG file.
+
+    Returns:
+        A tuple containing the RGB image array and a PIL Image object.
+    """
+    try:
+        # Blindaje contra tildes y caracteres especiales en la ruta.
+        img_data = np.fromfile(path, np.uint8)
+
+        # Decodificación segura en memoria.
+        img = cv2.imdecode(img_data, cv2.IMREAD_COLOR)
+
+        # Validación contra archivos corruptos.
+        if img is None:
+            raise ValueError(f"No se pudo cargar la imagen PNG en {path}")
+
+        # Corrección de canales de color (BGR a RGB).
+        img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
+        img2show = PILImage.fromarray(img_rgb)
+        return img_rgb, img2show
+
+    except Exception as e:
+        raise ValueError(f"No se pudo cargar la imagen PNG en {path}. Detalle: {e}")
+
+
+# Extensiones soportadas por cada función
+DICOM_EXTENSIONS = {".dcm", ".dicom"}
+JPG_EXTENSIONS = {".jpg", ".jpeg"}
+PNG_EXTENSIONS = {".png"}
+
+
+def read_image(path: str) -> Tuple[np.ndarray, PILImage.Image]:
+    """Interfaz común para leer cualquier tipo de imagen soportada.
+
+    Detecta automáticamente el tipo de archivo por su extensión
+    y llama a la función de lectura correspondiente.
+
+    Args:
+        path: Ruta al archivo de imagen (DICOM, JPG, JPEG o PNG).
+
+    Returns:
+        A tuple containing the RGB image array and a PIL Image object.
+
+    Raises:
+        ValueError: Si el formato no es soportado o la imagen no se puede leer.
+    """
+    extension = Path(path).suffix.lower()
+
+    if extension in DICOM_EXTENSIONS:
+        return read_dicom_file(path)
+    elif extension in JPG_EXTENSIONS:
+        return read_jpg_file(path)
+    elif extension in PNG_EXTENSIONS:
+        return read_png_file(path)
+    else:
+        raise ValueError(
+            f"Formato no soportado: '{extension}'. "
+            f"Formatos válidos: DICOM (.dcm), JPG (.jpg, .jpeg), PNG (.png)"
+        )
