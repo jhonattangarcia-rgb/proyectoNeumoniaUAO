@@ -10,7 +10,7 @@ from tkinter.messagebox import askokcancel, showinfo, WARNING
 from PIL import ImageGrab, ImageTk, Image as PILImage
 
 # Local application imports
-from app.read_img import read_dicom_file, read_jpg_file
+from app.read_img import read_image
 from app.integrator import predict
 
 
@@ -85,10 +85,7 @@ class App:
         )
         if filepath:
             try:
-                if filepath.lower().endswith(".dcm"):
-                    self.array, img2show = read_dicom_file(filepath)
-                else:
-                    self.array, img2show = read_jpg_file(filepath)
+                self.array, img2show = read_image(filepath)
                 self.img1_pil = img2show.resize((250, 250), PILImage.LANCZOS)
                 self.img1_tk = ImageTk.PhotoImage(self.img1_pil)
                 self.text_img1.delete("1.0", END)
