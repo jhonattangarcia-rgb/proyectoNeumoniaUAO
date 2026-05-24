@@ -106,17 +106,21 @@ docker build -t app-neumonia .
 ```bash
 docker run --rm \
   -e COMMAND_PROMPT_MODE=true \
-  -v "C:\Users\jean-\OneDrive\Escritorio\Proyectos de inteligencia artifical\Modulo 1\Volumen App Neumonia:/app/data" \
+  -v "WINDOWS_PATH_FOLDER:/app/data" \
   app-neumonia
 ```
 
 **Comando en una sola línea**
 
 ```bash
-docker run -d --name app-neumonia -e COMMAND_PROMPT_MODE=true -v "C:\Users\jean-\OneDrive\Escritorio\Proyectos de inteligencia artifical\Modulo 1\Volumen App Neumonia:/app/data" app-neumonia
+docker run -d --name app-neumonia -e COMMAND_PROMPT_MODE=true -v "WINDOWS_PATH_FOLDER:/app/data" app-neumonia
 ```
 
 **Comandos recomendados**
+
+```bash
+docker exec app-neumonia uv run python detector_neumonia.py --help
+```
 
 ```bash
 docker exec app-neumonia uv run python detector_neumonia.py validate-paths
