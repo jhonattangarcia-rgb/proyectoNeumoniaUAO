@@ -6,7 +6,7 @@ from app.cli import main
 from app.gui import App
 
 os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
-COMMAND_PROMPT_MODE = os.getenv("COMMAND_PROMPT_MODE", "true").strip().lower() == "true"
+COMMAND_PROMPT_MODE = os.getenv("COMMAND_PROMPT_MODE", "false").strip().lower() == "true"
 
 if __name__ == "__main__":
     if COMMAND_PROMPT_MODE:
