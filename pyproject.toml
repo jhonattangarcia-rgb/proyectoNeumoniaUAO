@@ -13,6 +13,10 @@ dependencies = [
     "pydicom==3.0.2",
     "pillow==12.2.0",
     "tkcap==0.0.4",
+    "click>=8.4.1",
+    "pandas>=3.0.3",
+    "fpdf>=1.7.2",
+    "openpyxl>=3.1.5",
 ]
 
 [dependency-groups]

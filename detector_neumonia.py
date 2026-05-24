@@ -1,13 +1,20 @@
-"""Application entrypoint for the pneumonia detection GUI."""
+"""Application entrypoint for the pneumonia detection app."""
 
 # Standard library imports
 import os
-os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
-
-# Local application imports
+from app.cli import main
 from app.gui import App
 
-# MEJORA: Arranque directo del ciclo de vida de la aplicación.
-# Se elimina la función main() redundante para simplificar la sintaxis.
+os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
+COMMAND_PROMPT_MODE = os.getenv("COMMAND_PROMPT_MODE", "true").strip().lower() == "true"
+
 if __name__ == "__main__":
-    app = App()
+    if COMMAND_PROMPT_MODE:
+        print("Starting pneumonia detection application in command prompt mode...")
+
+        main(standalone_mode=False)
+    else:
+        print("Starting pneumonia detection application in GUI mode...")
+        
+
+        app = App()
