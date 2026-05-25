@@ -6,7 +6,6 @@ from typing import Optional
 
 from fpdf import FPDF
 
-
 def create_pdf_from_image(
     image_path: Path,
     pdf_path: Path,
@@ -27,7 +26,6 @@ def create_pdf_from_image(
         pdf.cell(0, 10, title, ln=1)
     pdf.image(str(image_path), x=10, y=25, w=190)
     pdf.output(str(pdf_path))
-
 
 def create_summary_pdf(
     original_image: Path,
@@ -55,7 +53,9 @@ def create_summary_pdf(
     pdf.cell(0, 8, f"Clasificación: {label}", ln=1)
     pdf.cell(0, 8, f"Probabilidad: {probability:.2f} %", ln=1)
     pdf.ln(4)
-    pdf.multi_cell(0, 6, "Se muestra la radiografía original y el mapa Grad-CAM generado.")
+    pdf.multi_cell(
+        0, 6, "Se muestra la radiografía original y el mapa Grad-CAM generado."
+    )
     pdf.ln(6)
 
     image_width = 90

@@ -21,8 +21,14 @@ from .image import (
     save_numpy_image,
 )
 from .report import create_pdf_from_image, create_summary_pdf
-from .utils import echo_error, echo_info, echo_success, echo_warning, ensure_folder, is_numeric_cedula
-
+from .utils import (
+    echo_error, 
+    echo_info, 
+    echo_success, 
+    echo_warning, 
+    ensure_folder, 
+    is_numeric_cedula
+)
 
 def process_file(file_path: Path, output_base: Path) -> Dict[str, str | float]:
     """Process a single image file and save result artifacts.
@@ -32,8 +38,7 @@ def process_file(file_path: Path, output_base: Path) -> Dict[str, str | float]:
         output_base: Base path where result folders and files are created.
 
     Returns:
-        A record dictionary with the patient ID, file name, label,
-        probability, and timestamp.
+        A record dictionary with the patient ID, label, probability, and timestamp.
     """
     cedula = file_path.stem
     output_folder = build_result_folder(output_base, cedula)
@@ -50,7 +55,9 @@ def process_file(file_path: Path, output_base: Path) -> Dict[str, str | float]:
     original_pil.save(original_image_path)
     save_numpy_image(heatmap, gradcam_image_path)
 
-    create_pdf_from_image(gradcam_image_path, gradcam_pdf_path, title=f"Grad-CAM - {cedula}")
+    create_pdf_from_image(
+        gradcam_image_path, gradcam_pdf_path, title=f"Grad-CAM - {cedula}"
+    )
     create_summary_pdf(
         original_image=original_image_path,
         gradcam_image=gradcam_image_path,
@@ -61,7 +68,6 @@ def process_file(file_path: Path, output_base: Path) -> Dict[str, str | float]:
 
     record = {
         "cedula": cedula,
-        "archivo": file_path.name,
         "label": label,
         "probability": float(probability),
         "fecha": datetime.now().isoformat(timespec="seconds"),
@@ -154,7 +160,9 @@ def execute_classification_logic(
         else:
             files_to_process.append(file_path)
 
-    with tqdm(files_to_process, desc="Procesando archivos", unit="archivo") as progress_bar:
+    with tqdm(
+        files_to_process, desc="Procesando archivos", unit="archivo"
+    ) as progress_bar:
         for file_path in progress_bar:
             progress_bar.set_description(f"Procesando {file_path.name}")
             try:
@@ -169,7 +177,9 @@ def execute_classification_logic(
             echo_warning(skipped_file)
 
     if new_records:
-        updated_data = pd.concat([existing_data, pd.DataFrame(new_records)], ignore_index=True)
+        updated_data = pd.concat(
+            [existing_data, pd.DataFrame(new_records)], ignore_index=True
+        )
         save_database(database, updated_data)
         echo_success(f"Se guardaron {len(new_records)} registros nuevos en el Excel.\n")
     else:

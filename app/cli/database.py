@@ -10,7 +10,6 @@ from .utils import ensure_folder
 
 DATABASE_COLUMNS = ["cedula", "label", "probability", "fecha"]
 
-
 def load_database(database_path: Path) -> pd.DataFrame:
     """Load the Excel database and normalize expected columns.
 
