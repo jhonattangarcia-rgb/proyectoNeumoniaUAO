@@ -9,6 +9,7 @@ import pandas as pd
 from tqdm import tqdm
 
 from app.integrator import predict
+from app.read_img import read_image
 from .database import (
     get_recent_cedulas,
     load_database,
@@ -17,7 +18,6 @@ from .database import (
 from .image import (
     SUPPORTED_IMAGE_EXTENSIONS,
     build_result_folder,
-    read_image_file,
     save_numpy_image,
 )
 from .report import create_pdf_from_image, create_summary_pdf
@@ -38,7 +38,7 @@ def process_file(file_path: Path, output_base: Path) -> Dict[str, str | float]:
     cedula = file_path.stem
     output_folder = build_result_folder(output_base, cedula)
 
-    image_array, original_pil = read_image_file(file_path)
+    image_array, original_pil = read_image(file_path)
     label, probability, heatmap = predict(image_array)
 
     original_image_path = output_folder / "original.png"
@@ -164,15 +164,16 @@ def execute_classification_logic(
                 progress_bar.set_description("Error")
                 echo_error(f"Error procesando {file_path.name}: {error}")
 
-    for skipped_file in skipped_warnings:
-        echo_warning(skipped_file)
+    if skipped_warnings:
+        for skipped_file in skipped_warnings:
+            echo_warning(skipped_file)
 
     if new_records:
         updated_data = pd.concat([existing_data, pd.DataFrame(new_records)], ignore_index=True)
         save_database(database, updated_data)
-        echo_success(f"\nSe guardaron {len(new_records)} registros nuevos en el Excel.\n")
+        echo_success(f"Se guardaron {len(new_records)} registros nuevos en el Excel.\n")
     else:
-        echo_warning("\nNo se agregaron registros nuevos al Excel.\n")
+        echo_warning("No se agregaron registros nuevos al Excel.\n")
 
     echo_info(f"Total encontrados: {len(files)}")
     echo_info(f"Total válidos procesados: {len(new_records)}")
