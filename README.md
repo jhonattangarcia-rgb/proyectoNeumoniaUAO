@@ -1,173 +1,68 @@
-# Detección de Neumonía con IA
+# 🏥 Sistema de Detección Inteligente de Neumonia (UAO)
 
-Herramienta de Deep Learning para clasificación automática de radiografías de tórax en formato DICOM y JPG/PNG en tres categorías:
+![Versión](https://img.shields.io/badge/version-1.0.0--beta-blue)
+![Python](https://img.shields.io/badge/python-3.11+-green)
+![License](https://img.shields.io/badge/license-MIT-purple)
 
-- Neumonía Bacteriana
-- Neumonía Viral
-- Sin Neumonía
+Este proyecto es una herramienta avanzada de asistencia diagnóstica basada en **Deep Learning**. Su objetivo es procesar radiografías de tórax para identificar automáticamente signos de neumonía, clasificándolas en tres categorías: **Bacteriana, Viral o Normal**. 
 
-Utiliza Grad-CAM para generar un mapa de calor que resalta las regiones relevantes de la imagen que determinaron el diagnóstico.
-
----
-
-## Arquitectura del ProyectoproyectoNeumoniaUAO/
-├── app/
-│   ├── read_img.py          # Lectura de imágenes DICOM, JPG y PNG
-│   ├── preprocess_img.py    # Preprocesamiento de imágenes
-│   ├── load_model.py        # Carga del modelo WilhemNet86.h5
-│   ├── grad_cam.py          # Generación de mapa de calor
-│   ├── integrator.py        # Coordinación de módulos
-│   └── gui.py               # Interfaz gráfica con Tkinter
-├── tests/                   # Pruebas unitarias con pytest
-├── Dockerfile               # Configuración para contenedor Docker
-├── pyproject.toml           # Dependencias del proyecto
-└── README.md## 
-## Flujo de Datos
-Imagen (DICOM/JPG/PNG)
-↓
-read_img.py
-(lectura y conversión a array RGB)
-↓
-preprocess_img.py
-(resize 512x512 → escala de grises → CLAHE → normalización → tensor)
-↓
-load_model.py
-(carga WilhemNet86.h5)
-↓
-grad_cam.py
-(predicción + mapa de calor)
-↓
-integrator.py
-(retorna clase + probabilidad + heatmap)
-↓
-Interfaz gráfica
+El sistema combina potencia visual (GUI) con capacidades de procesamiento por lotes (Docker/CLI), utilizando la arquitectura de red neuronal **WilhemNet86** y mapas de calor **Grad-CAM** para ofrecer interpretabilidad médica al resaltar las zonas de la imagen que determinaron el diagnóstico.
 
 ---
 
-## Requisitos Previos
+## 📋 Requisitos Mínimos Previos
 
-- Python 3.11+
-- [uv](https://docs.astral.sh/uv/) para gestión del ambiente virtual
-- Docker Desktop (solo para ejecución con contenedor)
+Antes de comenzar, asegúrese de tener instaladas las siguientes herramientas en su sistema (Windows recomendado):
+
+1.  **Chocolatey** (Gestor de paquetes para Windows): 
+    *   [Instalar aquí](https://chocolatey.org/install) (Requiere PowerShell como Administrador).
+2.  **Make**: 
+    ```bash
+    choco install make
+    ```
+3.  **UV** (Gestor de paquetes y entornos Python ultrarrápido):
+    ```bash
+    powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+    ```
+4.  **Docker Desktop** (Opcional, solo para despliegue en contenedores).
 
 ---
 
-## Instalación y Ejecución Local
+## 🚀 Instalación y Puesta en Marcha
 
-> El ambiente virtual debe crearse exclusivamente con **uv**. No usar conda, venv ni pip directamente.
+Siga estos pasos para configurar el proyecto en su máquina local:
 
-**Paso 1: Clonar el repositorio**
-
+### 1. Clonar el Repositorio
 ```bash
 git clone https://github.com/jhonattangarcia-rgb/proyectoNeumoniaUAO.git
 cd proyectoNeumoniaUAO
 ```
 
-**Paso 2: Instalar uv**
+### 2. Gestión del Modelo de IA (.h5) ⚠️ **IMPORTANTE**
+Debido a su tamaño, el archivo del modelo entrenado (`conv_MLP_84.h5`) **no se encuentra en el repositorio de GitHub**.
+*   **Acción requerida:** Solicite el archivo `.h5` al equipo de desarrollo o descárguelo desde el enlace oficial proporcionado.
+*   **Ubicación:** Copie el archivo `conv_MLP_84.h5` directamente en la **raíz del proyecto**. El sistema no funcionará sin este archivo.
 
+### 3. Configuración del Entorno
+Utilice el comando `make` para preparar todo automáticamente (esto descargará las librerías necesarias):
 ```bash
-pip install uv
-```
-
-**Paso 3: Crear el ambiente virtual e instalar dependencias**
-
-```bash
-uv sync
-```
-
-**Paso 4: Activar el ambiente virtual**
-
-```bash
-# Windows
-.venv\Scripts\activate
-
-# Linux/Mac
-source .venv/bin/activate
-```
-
-**Paso 5: Ejecutar la aplicación**
-
-```bash
-python app/integrator.py
+make install
 ```
 
 ---
 
-## Ejecución con Docker
+## 💻 Aplicación de Escritorio (GUI)
 
-Esta formato es ideal para usuarios sin experiencia en Python o para despliegue en entornos controlados. La aplicación se ejecuta en modo CLI dentro del contenedor, procesando las imágenes desde un volumen montado.
-
-<p align="center">
-  <img src="img/1.clic_app_mode.png" alt="CLI Mode" />
-</p>
-
-### Opción 1: Usar la imagen preconstruida
-
-Reemplaza `WINDOWS_PATH_FOLDER` con la ruta absoluta de tu carpeta de datos en Windows (ej. `C:\Users\Usuario\Desktop\data`):
-
+Para lanzar la interfaz visual interactiva, ejecute:
 ```bash
-docker pull ghcr.io/baronco/app-neumonia:v0.1.0
+make run
 ```
 
-Luego ejecuta el contenedor con el siguiente comando:
-
-```bash
-docker run --rm --name app-neumonia -e COMMAND_PROMPT_MODE=true -v "WINDOWS_PATH_FOLDER:/app/data" ghcr.io/baronco/app-neumonia:v0.1.0
-```
-
-### Opción 2: Construir la imagen localmente
-
-Si deseas construir la imagen tú mismo, asegúrate de estar en el directorio raíz del proyecto y ejecuta:
-
-```bash
-docker build -t app-neumonia .
-```
-Luego ejecuta el contenedor con el siguiente comando:
-
-```bash
-docker run -d --name app-neumonia -e COMMAND_PROMPT_MODE=true -v "WINDOWS_PATH_FOLDER:/app/data" ghcr.io/baronco/app-neumonia:v0.1.0
-```
-
-**Comandos recomendados**
-
-Se recomienda ejecutar estos comandos dentro del contenedor para validar la estructura de carpetas, ejecutar la clasificación por lotes y mostrar el contenido del Excel:
-
-Ejecuta el siguiente comando para mostrar la ayuda de los comandos disponibles:
-
-```bash
-docker exec app-neumonia uv run python detector_neumonia.py --help
-```
-
-Ejecuta el siguiente comando para validar la estructura de carpetas del volumen, en caso de errores, el contenedor mostrará mensajes indicando qué carpetas faltan o están mal configuradas:
-
-```bash
-docker exec app-neumonia uv run python detector_neumonia.py validate-paths
-```
-
-Ejecuta el siguiente comando para procesar las imágenes del volumen y generar las salidas. El argumento `--delta-days` sirve para filtrar las imágenes por fecha, procesando solo aquellas que hayan sido modificadas en los últimos N días. Si no se especifica, se procesarán todas las imágenes, esto es útil pues una radiografía tomada a un paciente puede repetirse con un delta de días para actualizar su diagnóstico sin necesidad de eliminar la imagen anterior o duplicar registros en el Excel. El default es 30 días, lo que significa que se procesarán las imágenes modificadas en el último mes:
-
-```bash
-docker exec app-neumonia uv run python detector_neumonia.py execute-classification
-```
-Para deltas personalizados se debe usar la bandera `--delta-days` seguida del número de días deseado, por ejemplo, para procesar solo las imágenes modificadas en los últimos 30 días:
-
-```bash
-docker exec app-neumonia uv run python detector_neumonia.py execute-classification --delta-days 30
-```
-Ejecuta el siguiente comando para mostrar el contenido actual del archivo `database.xlsx` ubicado en el volumen. Esto es útil para verificar que los datos se están guardando correctamente después de ejecutar la clasificación por lotes:
-
-```bash
-docker exec app-neumonia uv run python detector_neumonia.py show-excel
-```
-
-### Requisitos de la estructura de carpetas del volumen
-El volumen de Windows debe tener esta estructura antes de ejecutar el contenedor:
-
-- `inputs/`: contiene las radiografías DICOM o JPEG. Los nombres de archivo deben ser numéricos. **Solo se deben agregar las imágenes a esta carpeta, no se deben crear subcarpetas dentro de inputs**.
-- `outputs/`: se generarán las carpetas por cédula y se guardarán las salidas.
-- `database/`: se almacenará `database.xlsx`.
-
-Si `database/database.xlsx` no existe, el contenedor lo creará en la primera ejecución.
+### Funcionalidades Disponibles:
+*   **Carga de Imagen:** Soporta formatos médicos **DICOM** (.dcm) y formatos estándar (**JPG, PNG**).
+*   **Predicción Instantánea:** Clasifica la imagen y genera el mapa Grad-CAM en segundos.
+*   **Gestión de Datos:** Ingrese la cédula del paciente y use el botón **Guardar** para registrar el resultado en el histórico local (`historial.csv`).
+*   **Reportes PDF:** El botón **PDF** genera un informe profesional que incluye la radiografía original, el mapa de calor y el diagnóstico detallado.
 
 ---
 
@@ -185,17 +80,167 @@ https://drive.google.com/drive/folders/1WOuL0wdVC6aojy8IfssHcqZ4Up14dy0g
 
 ---
 
-## Acerca del Modelo
 
-La red neuronal convolucional WilhemNet86 está basada en la arquitectura propuesta por F. Pasa, V. Golkov, F. Pfeifer, D. Cremers y D. Pfeifer en *Efficient Deep Network Architectures for Fast Chest X-Ray Tuberculosis Screening and Visualization*.
+## 📂 Estructura del Proyecto
 
-Está compuesta por 5 bloques convolucionales con conexiones skip para evitar el desvanecimiento del gradiente, seguidos de capas de pooling y tres capas Dense de 1024, 1024 y 3 neuronas. Utiliza Dropout al 20% para regularización.
+```text
+D:\UAO-Neumonia\
+├── app/                        # Núcleo de la aplicación
+│   ├── cli/                    # Módulo para procesamiento por lotes (Docker)
+│   │   ├── cli.py              # Definición de comandos Click
+│   │   ├── database.py         # Manejo de Excel/Pandas
+│   │   ├── image.py            # Utilidades de guardado de imágenes
+│   │   ├── process.py          # Lógica de procesamiento por lotes
+│   │   ├── report.py           # Generador de reportes PDF (CLI)
+│   │   └── utils.py            # Utilidades de consola
+│   ├── grad_cam.py             # Generación de mapas de calor
+│   ├── gui.py                  # Interfaz gráfica (Tkinter)
+│   ├── integrator.py           # Orquestador de predicciones
+│   ├── load_model.py           # Cargador del modelo Keras
+│   ├── preprocess_img.py       # Pipeline de preprocesamiento
+│   └── read_img.py             # Lector DICOM/JPG/PNG
+├── tests/                      # Pruebas automatizadas (Pytest)
+├── detector_neumonia.py        # Punto de entrada principal (GUI/CLI)
+├── Dockerfile                  # Receta para el contenedor Docker
+├── Makefile                    # Automatización de tareas
+├── pyproject.toml              # Gestión de dependencias (UV)
+├── uv.lock                     # Lockfile de dependencias
+├── Manual.md                   # Documentación de usuario
+└── conv_MLP_84.h5              # [MANUAL] Modelo de red neuronal
+```
+## 🔄 Flujo de Datos y Arquitectura
+
+El sistema utiliza un núcleo de procesamiento compartido (Core) optimizado para ejecutarse de forma interactiva (GUI) o masiva (Docker/CLI). El siguiente diagrama describe el recorrido de la información:
+
+```mermaid
+graph LR
+    subgraph Entradas
+        GUI_IN[Cargar Imagen]
+        CLI_IN[Scan inputs/]
+    end
+
+    subgraph CORE[Núcleo de IA Compartido]
+        READ(read_img.py) --> PRE(preprocess_img.py)
+        PRE --> MOD(load_model.py)
+        MOD --> CAM(grad_cam.py)
+        CAM --> INT(integrator.py)
+    end
+
+    subgraph Salidas_CLI[Procesamiento Batch CLI]
+        direction TB
+        CLI_P(process.py) --> CLI_DB(database.py)
+        CLI_P --> CLI_REP(report.py)
+        CLI_P --> CLI_IMG(image.py)
+    end
+
+    GUI_IN --> READ
+    CLI_IN --> CORE
+    
+    INT -->|GUI| GUI_RES[gui.py: Visualización Tkinter]
+    INT -->|CLI| CLI_P
+    
+    style CORE fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    style Salidas_CLI fill:#f1f8e9,stroke:#33691e,stroke-width:1px
+```
+---
+
+## 🛠️ Descripción de Módulos
+
+### Núcleo (Core)
+*   **`read_img.py`**: Motor de lectura multiformato. Traduce archivos DICOM, JPG y PNG a matrices numéricas (NumPy) compatibles con el modelo.
+*   **`preprocess_img.py`**: Pipeline de visión artificial. Aplica redimensionamiento (512x512), ecualización de histograma (CLAHE) y normalización.
+*   **`load_model.py`**: Gestiona la carga eficiente del modelo `conv_MLP_84.h5` en memoria.
+*   **`grad_cam.py`**: Implementa el algoritmo de Grad-CAM para generar los mapas de calor de interpretabilidad.
+*   **`integrator.py`**: El orquestador principal. Recibe una imagen y coordina todos los pasos anteriores para retornar el diagnóstico final.
+
+### Aplicación y CLI
+*   **`gui.py`**: Implementa la aplicación de escritorio usando Tkinter, gestionando eventos, visualización y generación de reportes individuales.
+*   **`detector_neumonia.py`**: Punto de entrada dual. Detecta el entorno (Docker o Local) y decide si lanza la GUI o el motor CLI.
+*   **`app/cli/cli.py`**: Define los comandos de consola (validate-paths, execute-classification, show-excel) usando la librería Click.
+*   **`app/cli/process.py`**: Contiene la lógica de procesamiento por lotes, recorriendo carpetas y coordinando el guardado de cada resultado.
+*   **`app/cli/database.py`**: Gestiona la persistencia en Excel (`database.xlsx`), incluyendo filtros por fecha (`delta-days`).
+*   **`app/cli/report.py`**: Generador especializado de informes PDF para el flujo automático.
+*   **`app/cli/image.py`** y **`app/cli/utils.py`**: Utilidades auxiliares para manejo de archivos y formato de consola.
 
 ---
 
-## Acerca de Grad-CAM
+## 🧪 Garantía de Calidad (Tests)
 
-Técnica de visualización que calcula el gradiente de la salida de la clase predicha respecto a las activaciones de la última capa convolucional. El resultado es un mapa de calor superpuesto sobre la radiografía que indica las regiones anatómicas que determinaron la clasificación.
+El proyecto cuenta con una suite de pruebas automatizadas con **Pytest** para asegurar la integridad de la lógica:
+
+*   **`test_files.py`**: Valida que el sistema reconozca extensiones permitidas (.dcm, .jpg, .png) y maneje correctamente errores de archivos no encontrados.
+*   **`test_models.py`**: Verifica que el archivo del modelo IA (`conv_MLP_84.h5`) esté presente en la ubicación correcta antes de iniciar.
+*   **`test_preprocess.py`**: Asegura que el pipeline de preprocesamiento transforme las imágenes al formato exacto de 512x512 y tipo float32 que la red neuronal requiere.
+
+### Cómo ejecutar las pruebas:
+```bash
+make test
+```
+
+## 🛠️ Automatización con Makefile
+
+El proyecto incluye un `Makefile` para simplificar las operaciones comunes:
+
+*   `make start`: Actualiza el código desde GitHub y sincroniza las dependencias.
+*   `make run`: Ejecuta la aplicación de escritorio.
+*   `make lint`: Verifica que el código cumpla con los estándares de calidad (Ruff).
+*   `make test`: Ejecuta las pruebas automatizadas para asegurar que todo funcione bien.
+*   `make clean`: Limpia archivos temporales y cachés para liberar espacio.
+
+---
+
+## 🐳 Uso con Docker (Modo CLI Profesional)
+
+El modo Docker está diseñado para procesar grandes volúmenes de imágenes de forma automática sin intervención humana.
+
+Este formato es ideal para usuarios sin experiencia en Python o para despliegue en entornos controlados. La aplicación se ejecuta en modo CLI dentro del contenedor, procesando las imágenes desde un volumen montado.
+
+### Flujo de Trabajo en Contenedor:
+1.  **Estructura de Carpetas:** Debe tener una carpeta en su PC (ej. `C:\DatosMedicos\data\`)  ⚠️ **IMPORTANTE** debe existir la carpeta de nombre **data** con tres subcarpetas: `inputs/`, `outputs/` y `database/`.
+2.  **Nombres de Imagen:** Las imágenes en `inputs/` **deben tener nombre numérico** (ej. `12345.jpg`), este debe ser el número de cédula del paciente.
+
+### Preparación de la Imagen Docker
+
+En lugar de configurar todo manualmente, descargue la versión oficial pre-construida usando nuestro atajo:
+
+```bash
+make docker-pull
+```
+
+### Comandos Docker Simplificados (Vía Makefile)
+
+Una vez descargada la imagen, puede usar los atajos del `Makefile` para gestionar el procesamiento. El sistema utilizará automáticamente la imagen descargada.
+
+2.  **Validar su estructura de carpetas:**
+    (Asegúrese de que su ruta local termine en la carpeta `data` que contiene `inputs`, `outputs` y `database`).
+    ```bash
+    make docker-validate DATA="(ejemplo)C:\DatosMedicos\data\"
+    ```
+
+3.  **Ejecutar el proceso de clasificación:**
+    ```bash
+    make docker-execute DATA="(ejemplo)C:\DatosMedicos\data\"
+    ```
+
+4.  **Ver el resumen de la base de datos (Excel):**
+    ```bash
+    make docker-show DATA="(ejemplo)C:\DatosMedicos\data\"
+    ```
+
+### 📂 Consulta de Resultados
+Una vez finalizado el proceso de clasificación (`docker-execute`):
+*   **Resultados Individuales:** Diríjase a su carpeta local `outputs/`. Encontrará una subcarpeta por cada cédula procesada conteniendo el **reporte PDF**, la imagen **Grad-CAM** y un archivo **JSON** con el detalle técnico.
+*   **Historial Consolidado:** Abra el archivo `database/database.xlsx` para ver la tabla completa de pacientes procesados, probabilidades y fechas.
+
+---
+
+## 🧠 Acerca del Modelo y Tecnología
+
+### WilhemNet86
+La red neuronal convolucional está basada en una arquitectura de 5 bloques con conexiones skip, seguidos de pooling y capas Dense (1024, 1024, 3) con Dropout al 20%. Está diseñada para un cribado rápido y eficiente.
+
+### Grad-CAM
+Técnica de visualización que calcula el gradiente de la clase predicha respecto a la última capa convolucional, generando un mapa de calor que resalta las regiones anatómicas clave para el diagnóstico.
 
 ---
 
@@ -215,10 +260,18 @@ copies or substantial portions of the Software.
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-## Autores
 
-- Jhonatan Garcia
-- Andrea Mallama
-- Francisco Quintero
-- Jan Carlos
-- Heidy
+---
+
+## 👥 Autores y Créditos
+
+Este proyecto es fruto del trabajo del equipo de ingeniería de la **Universidad Autónoma de Occidente**:
+
+- **Jhonatan Garcia**
+- **Andrea Mallama**
+- **Francisco Quintero**
+- **Jan Carlos**
+- **Heidy**
+
+---
+© 2026 Equipo UAO - Proyecto Neumonía. Licencia MIT.
