@@ -98,14 +98,54 @@ python app/integrator.py
 **Paso 1: Construir la imagen**
 
 ```bash
-docker build -t neumonia .
+docker build -t app-neumonia .
 ```
 
-**Paso 2: Ejecutar el contenedor**
+**Paso 2: Ejecutar el contenedor con volumen y variable de entorno**
 
 ```bash
-docker run -v $(pwd)/data:/app/data neumonia --input /app/data/imagen.dcm
+docker run --rm \
+  -e COMMAND_PROMPT_MODE=true \
+  -v "WINDOWS_PATH_FOLDER:/app/data" \
+  app-neumonia
 ```
+
+**Comando en una sola línea**
+
+```bash
+docker run -d --name app-neumonia -e COMMAND_PROMPT_MODE=true -v "WINDOWS_PATH_FOLDER:/app/data" app-neumonia
+```
+
+**Comandos recomendados**
+
+```bash
+docker exec app-neumonia uv run python detector_neumonia.py --help
+```
+
+```bash
+docker exec app-neumonia uv run python detector_neumonia.py validate-paths
+```
+
+```bash
+docker exec app-neumonia uv run python detector_neumonia.py execute-classification
+```
+
+```bash
+docker exec app-neumonia uv run python detector_neumonia.py show-excel
+```
+
+```bash
+docker exec app-neumonia uv run python detector_neumonia.py execute-classification --delta-days 30
+```
+
+### Requisitos de la estructura de carpetas del volumen
+El volumen de Windows debe tener esta estructura antes de ejecutar el contenedor:
+
+- `inputs/`: contiene las radiografías DICOM o JPEG. Los nombres de archivo deben ser numéricos.
+- `outputs/`: se generarán las carpetas por cédula y se guardarán las salidas.
+- `database/`: se almacenará `database.xlsx`.
+
+Si `database/database.xlsx` no existe, el contenedor lo creará en la primera ejecución.
 
 ---
 
