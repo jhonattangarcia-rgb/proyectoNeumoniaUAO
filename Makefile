@@ -1,7 +1,7 @@
 PYTHON ?= uv run python
 UV ?= uv
 APP ?= detector_neumonia.py
-DOCKER_IMAGE ?= uao-neumonia
+DOCKER_IMAGE ?= ghcr.io/baronco/app-neumonia:v0.1.0
 MODEL ?= conv_MLP_84.h5
 
 .DEFAULT_GOAL := help
@@ -12,15 +12,15 @@ MODEL ?= conv_MLP_84.h5
 help:
 	@chcp 65001 > nul
 	@echo Targets disponibles:
-	@echo   make install       - Instala dependencias usando uv sync
-	@echo   make start         - 🚀 Cambia a dev, baja cambios de GitHub y sincroniza uv
-	@echo   make run           - Ejecuta la app principal con uv run
-	@echo   make lint          - Verifica sintaxis Python y calidad de código con Ruff
-	@echo   make test          - Ejecuta pruebas con uv run unittest
-	@echo   make check-model   - Verifica si existe el modelo $(MODEL)
-	@echo   make clean         - Limpia caches/temporales y entorno uv
-	@echo   make docker-build  - Construye imagen Docker
-	@echo   make docker-run    - Ejecuta app dentro de Docker
+	@echo   make install          - Instala dependencias y sincroniza uv
+	@echo   make run              - Ejecuta la aplicación principal
+	@echo   make start            - 🚀 Actualiza desde GitHub y sincroniza uv
+	@echo   make lint             - Verifica calidad de código con Ruff
+	@echo   make test             - Ejecuta las pruebas unitarias
+	@echo   make docker-pull      - 📥 Descarga la imagen oficial desde GHCR
+	@echo   make docker-validate  - 🔍 Valida la estructura de carpetas (DATA="...")
+	@echo   make docker-execute   - 🚀 Procesa las imágenes (DATA="...")
+	@echo   make docker-show      - 📊 Muestra el Excel de resultados (DATA="...")
 
 install:
 	$(UV) sync
@@ -48,19 +48,25 @@ lint:
 	$(UV) run ruff check .
 
 test:
-	$(PYTHON) -m unittest discover -v
+	$(PYTHON) -m pytest -v
 
-check-model:
-	@chcp 65001 > nul
-	@$(PYTHON) -c "import os,sys;p='$(MODEL)';ok=os.path.exists(p);print(('OK: modelo encontrado -> ' + p) if ok else ('ERROR: modelo no encontrado -> ' + p));sys.exit(0 if ok else 1)"
+# 🐳 Comandos Docker Simplificados
+# Reemplaza 'DATA_PATH' con tu ruta absoluta si usas estos comandos directamente.
+# Ejemplo: make docker-execute DATA="C:/Usuarios/Yo/Proyecto/data"
+DATA ?= $(shell pwd)
 
-clean:
-	@chcp 65001 > nul
-	@$(PYTHON) -c "from pathlib import Path;import shutil;[shutil.rmtree(p,ignore_errors=True) for p in Path('.').rglob('__pycache__')];[p.unlink() for p in Path('.').rglob('*.pyc')];[p.unlink() for p in Path('.').rglob('*.pyo')];[shutil.rmtree(Path('.pytest_cache'),ignore_errors=True), shutil.rmtree(Path('.mypy_cache'),ignore_errors=True)];print('Limpieza completada')"
-	rm -rf .venv uv.lock
+docker-pull:
+	@echo 📥 Descargando imagen oficial desde GitHub Container Registry...
+	docker pull $(DOCKER_IMAGE)
 
-docker-build:
-	docker build -t $(DOCKER_IMAGE) .
+docker-validate:
+	@echo 🔍 Validando estructura de datos en $(DATA)...
+	docker run --rm -v "$(DATA):/app/data" $(DOCKER_IMAGE) uv run python $(APP) validate-paths
 
-docker-run:
-	docker run --rm -it $(DOCKER_IMAGE)
+docker-execute:
+	@echo 🚀 Procesando imágenes en $(DATA)...
+	docker run --rm -v "$(DATA):/app/data" $(DOCKER_IMAGE) uv run python $(APP) execute-classification --delta-days $(or $(DAYS), 30)
+
+docker-show:
+	@echo 📊 Mostrando base de datos (Excel)...
+	docker run --rm -v "$(DATA):/app/data" $(DOCKER_IMAGE) uv run python $(APP) show-excel
