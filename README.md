@@ -95,53 +95,75 @@ python app/integrator.py
 
 ## Ejecución con Docker
 
-**Paso 1: Construir la imagen**
+Esta formato es ideal para usuarios sin experiencia en Python o para despliegue en entornos controlados. La aplicación se ejecuta en modo CLI dentro del contenedor, procesando las imágenes desde un volumen montado.
+
+<p align="center">
+  <img src="img/1.clic_app_mode.png" alt="CLI Mode" />
+</p>
+
+### Opción 1: Usar la imagen preconstruida
+
+Reemplaza `WINDOWS_PATH_FOLDER` con la ruta absoluta de tu carpeta de datos en Windows (ej. `C:\Users\Usuario\Desktop\data`):
+
+```bash
+docker pull ghcr.io/baronco/app-neumonia:v0.1.0
+```
+
+Luego ejecuta el contenedor con el siguiente comando:
+
+```bash
+docker run --rm --name app-neumonia -e COMMAND_PROMPT_MODE=true -v "WINDOWS_PATH_FOLDER:/app/data" ghcr.io/baronco/app-neumonia:v0.1.0
+```
+
+### Opción 2: Construir la imagen localmente
+
+Si deseas construir la imagen tú mismo, asegúrate de estar en el directorio raíz del proyecto y ejecuta:
 
 ```bash
 docker build -t app-neumonia .
 ```
-
-**Paso 2: Ejecutar el contenedor con volumen y variable de entorno**
-
-```bash
-docker run --rm \
-  -e COMMAND_PROMPT_MODE=true \
-  -v "WINDOWS_PATH_FOLDER:/app/data" \
-  app-neumonia
-```
-
-**Comando en una sola línea**
+Luego ejecuta el contenedor con el siguiente comando:
 
 ```bash
-docker run -d --name app-neumonia -e COMMAND_PROMPT_MODE=true -v "WINDOWS_PATH_FOLDER:/app/data" app-neumonia
+docker run -d --name app-neumonia -e COMMAND_PROMPT_MODE=true -v "WINDOWS_PATH_FOLDER:/app/data" ghcr.io/baronco/app-neumonia:v0.1.0
 ```
 
 **Comandos recomendados**
+
+Se recomienda ejecutar estos comandos dentro del contenedor para validar la estructura de carpetas, ejecutar la clasificación por lotes y mostrar el contenido del Excel:
+
+Ejecuta el siguiente comando para mostrar la ayuda de los comandos disponibles:
 
 ```bash
 docker exec app-neumonia uv run python detector_neumonia.py --help
 ```
 
+Ejecuta el siguiente comando para validar la estructura de carpetas del volumen, en caso de errores, el contenedor mostrará mensajes indicando qué carpetas faltan o están mal configuradas:
+
 ```bash
 docker exec app-neumonia uv run python detector_neumonia.py validate-paths
 ```
 
+Ejecuta el siguiente comando para procesar las imágenes del volumen y generar las salidas. El argumento `--delta-days` sirve para filtrar las imágenes por fecha, procesando solo aquellas que hayan sido modificadas en los últimos N días. Si no se especifica, se procesarán todas las imágenes, esto es útil pues una radiografía tomada a un paciente puede repetirse con un delta de días para actualizar su diagnóstico sin necesidad de eliminar la imagen anterior o duplicar registros en el Excel. El default es 30 días, lo que significa que se procesarán las imágenes modificadas en el último mes:
+
 ```bash
 docker exec app-neumonia uv run python detector_neumonia.py execute-classification
 ```
+Para deltas personalizados se debe usar la bandera `--delta-days` seguida del número de días deseado, por ejemplo, para procesar solo las imágenes modificadas en los últimos 30 días:
+
+```bash
+docker exec app-neumonia uv run python detector_neumonia.py execute-classification --delta-days 30
+```
+Ejecuta el siguiente comando para mostrar el contenido actual del archivo `database.xlsx` ubicado en el volumen. Esto es útil para verificar que los datos se están guardando correctamente después de ejecutar la clasificación por lotes:
 
 ```bash
 docker exec app-neumonia uv run python detector_neumonia.py show-excel
 ```
 
-```bash
-docker exec app-neumonia uv run python detector_neumonia.py execute-classification --delta-days 30
-```
-
 ### Requisitos de la estructura de carpetas del volumen
 El volumen de Windows debe tener esta estructura antes de ejecutar el contenedor:
 
-- `inputs/`: contiene las radiografías DICOM o JPEG. Los nombres de archivo deben ser numéricos.
+- `inputs/`: contiene las radiografías DICOM o JPEG. Los nombres de archivo deben ser numéricos. **Solo se deben agregar las imágenes a esta carpeta, no se deben crear subcarpetas dentro de inputs**.
 - `outputs/`: se generarán las carpetas por cédula y se guardarán las salidas.
 - `database/`: se almacenará `database.xlsx`.
 
