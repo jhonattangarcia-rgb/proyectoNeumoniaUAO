@@ -1,7 +1,7 @@
 # 🏥 Sistema de Detección Inteligente de Neumonia (UAO)
 
 ![Versión](https://img.shields.io/badge/version-1.0.0--beta-blue)
-![Python](https://img.shields.io/badge/python-3.11+-green)
+![Python](https://img.shields.io/badge/python-3.11.9-green)
 ![License](https://img.shields.io/badge/license-MIT-purple)
 
 Este proyecto es una herramienta avanzada de asistencia diagnóstica basada en **Deep Learning**. Su objetivo es procesar radiografías de tórax para identificar automáticamente signos de neumonía, clasificándolas en tres categorías: **Bacteriana, Viral o Normal**. 
@@ -270,8 +270,8 @@ Este proyecto es fruto del trabajo del equipo de ingeniería de la **Universidad
 - **Jhonatan Garcia**
 - **Andrea Mallama**
 - **Francisco Quintero**
-- **Jan Carlos**
-- **Heidy**
+- **Jean Marco Varon**
+- **Heidy Romero**
 
 ---
 © 2026 Equipo UAO - Proyecto Neumonía. Licencia MIT.
