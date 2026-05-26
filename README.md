@@ -189,25 +189,61 @@ El proyecto incluye un `Makefile` para simplificar las operaciones comunes:
 
 ---
 
-## 🐳 Uso con Docker (Modo CLI Profesional)
+### 🐳 Uso con Docker (Modo CLI Profesional)
 
 El modo Docker está diseñado para procesar grandes volúmenes de imágenes de forma automática sin intervención humana.
 
 Este formato es ideal para usuarios sin experiencia en Python o para despliegue en entornos controlados. La aplicación se ejecuta en modo CLI dentro del contenedor, procesando las imágenes desde un volumen montado.
 
-### Flujo de Trabajo en Contenedor:
-1.  **Estructura de Carpetas:** Debe tener una carpeta en su PC (ej. `C:\DatosMedicos\data\`)  ⚠️ **IMPORTANTE** debe existir la carpeta de nombre **data** con tres subcarpetas: `inputs/`, `outputs/` y `database/`.
-2.  **Nombres de Imagen:** Las imágenes en `inputs/` **deben tener nombre numérico** (ej. `12345.jpg`), este debe ser el número de cédula del paciente.
-
-### Preparación de la Imagen Docker
-
-Descargue la versión oficial pre-construida usando nuestro atajo:
-
+#### 1. Preparación de la Imagen Docker
+Descargue la versión oficial pre-construida:
 ```bash
-make docker-pull
+docker pull ghcr.io/baronco/app-neumonia:v0.1.0
 ```
 
-### Comandos Docker Simplificados (Vía Makefile)
+#### 2. Comandos Directos (Sin necesidad de descargar el proyecto)
+Si usted no tiene el repositorio descargado y solo desea usar Docker, siga este flujo de trabajo (reemplace `C:/Ruta/A/Tu/data` por su ruta local):
+
+*   **Paso 1: Iniciar el contenedor (Obligatorio primero):**
+    Este comando deja el sistema listo y "escuchando" en segundo plano.
+    ```bash
+    docker run -d --rm --name app-neumonia -e COMMAND_PROMPT_MODE=true -v "C:/Ruta/A/Tu/data:/app/data" ghcr.io/baronco/app-neumonia:v0.1.0
+    ```
+*   **Paso 2: Ejecutar tareas sobre el contenedor activo:**
+    Una vez iniciado, use estos comandos para procesar sus datos de forma rápida:
+    *   **Ver Ayuda:**
+        Muestra los comandos disponibles y sus opciones:
+        ```bash
+        docker exec app-neumonia uv run python detector_neumonia.py --help
+        ```
+    *   **Validar Estructura:**
+        Valida que existan las carpetas `inputs`, `outputs` y `database` en el volumen:
+        ```bash
+        docker exec app-neumonia uv run python detector_neumonia.py validate-paths
+        ```
+    *   **Ejecutar Clasificación:**
+        Procesa las imágenes. El argumento `--delta-days` (default 30) permite procesar solo imágenes modificadas recientemente, permitiendo actualizar diagnósticos sin duplicar registros:
+        ```bash
+        docker exec app-neumonia uv run python detector_neumonia.py execute-classification --delta-days 30
+        ```
+    *   **Mostrar Base de Datos (Excel):**
+        Verifica el contenido actual de `database.xlsx`:
+        ```bash
+        docker exec app-neumonia uv run python detector_neumonia.py show-excel
+        ```
+    *   **Ver Logs (Monitoreo):**
+        ```bash
+        docker logs -f app-neumonia
+        ```
+    *   **Detener el sistema:**
+        ```bash
+        docker stop app-neumonia
+        ```
+
+---
+
+### 🛠️ Automatización con Makefile
+Si usted descargó este proyecto, puede usar los atajos del `Makefile` que simplifican los comandos anteriores:
 
 Una vez descargada la imagen, puede usar los atajos del `Makefile` para gestionar el procesamiento de forma sencilla.
 
