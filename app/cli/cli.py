@@ -15,6 +15,7 @@ DEFAULT_INPUTS = Path("/app/data/inputs")
 DEFAULT_OUTPUTS = Path("/app/data/outputs")
 DEFAULT_DATABASE = Path("/app/data/database/database.xlsx")
 
+
 # Custom click Group to include subcommand options in root help.
 class HelpGroup(click.Group):
     """Custom click Group to include subcommand options in root help."""
@@ -42,7 +43,7 @@ class HelpGroup(click.Group):
 # Root CLI group for all commands.
 @click.group(cls=HelpGroup, context_settings={"help_option_names": ["-h", "--help"]})
 def main() -> None:
-    """Comandos CLI para el procesamiento de radiografías y la validación del volumen."""
+    """Comandos CLI procesamiento de radiografías y la validación del volumen."""
     pass
 
 
@@ -59,10 +60,7 @@ def execute_classification(delta_days: int) -> None:
     """Run classification using the default volume paths."""
     # Delegate actual processing to the reusable CLI logic module.
     execute_classification_logic(
-        DEFAULT_INPUTS, 
-        DEFAULT_OUTPUTS, 
-        DEFAULT_DATABASE, 
-        delta_days
+        DEFAULT_INPUTS, DEFAULT_OUTPUTS, DEFAULT_DATABASE, delta_days
     )
 
 
@@ -86,7 +84,7 @@ def validate_paths() -> None:
         errors.append(f"No existe el directorio outputs: {outputs}")
     if not database.parent.exists() or not database.parent.is_dir():
         errors.append(f"No existe el directorio database: {database.parent}")
-    
+
     # Validate the inputs dir contains only supported image files with numeric names.
     if inputs.exists() and inputs.is_dir():
         for path in sorted(inputs.iterdir()):
@@ -123,7 +121,7 @@ def show_excel() -> None:
         return
 
     echo_info(f"Archivo Excel cargado: {database}\n")
-    click.echo(df.to_markdown(index=False)+"\n")
+    click.echo(df.to_markdown(index=False) + "\n")
 
 
 if __name__ == "__main__":
