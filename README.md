@@ -244,11 +244,6 @@ Técnica de visualización que calcula el gradiente de la clase predicha respect
 
 ---
 
-## ⚖️ Licencia
-Este proyecto está licenciado bajo los términos de la [Licencia MIT](LICENSE).
-
----
-
 ## 👥 Autores y Créditos
 
 Este proyecto es fruto del trabajo del equipo de ingeniería de la **Universidad Autónoma de Occidente**:
@@ -258,6 +253,10 @@ Este proyecto es fruto del trabajo del equipo de ingeniería de la **Universidad
 - **Francisco Quintero**
 - **Jean Marco Varon**
 - **Heidy Romero**
+
+---
+## ⚖️ Licencia
+Este proyecto está licenciado bajo los términos de la [Licencia MIT](LICENSE).
 
 ---
 © 2026 Equipo UAO - Proyecto Neumonía. Licencia MIT.
