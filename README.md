@@ -201,7 +201,7 @@ Este formato es ideal para usuarios sin experiencia en Python o para despliegue 
 
 ### Preparación de la Imagen Docker
 
-En lugar de configurar todo manualmente, descargue la versión oficial pre-construida usando nuestro atajo:
+Descargue la versión oficial pre-construida usando nuestro atajo:
 
 ```bash
 make docker-pull
@@ -209,22 +209,49 @@ make docker-pull
 
 ### Comandos Docker Simplificados (Vía Makefile)
 
-Una vez descargada la imagen, puede usar los atajos del `Makefile` para gestionar el procesamiento. El sistema utilizará automáticamente la imagen descargada.
+Una vez descargada la imagen, puede usar los atajos del `Makefile` para gestionar el procesamiento de forma sencilla.
 
-2.  **Validar su estructura de carpetas:**
+⚠️ **IMPORTANTE** reemplaza **"D:\DatosMedicos\data\"** por tu ruta
+
+1.  **Iniciar el Contenedor (Segundo Plano):**
+    Arranca el contenedor en modo *detached* para liberar su terminal inmediatamente:
+    ```bash
+    make docker-run DATA="D:\DatosMedicos\data\"
+    ```
+
+2.  **Monitorear el Progreso (Logs):**
+    Si desea ver qué está ocurriendo dentro del contenedor:
+    ```bash
+    make docker-logs
+    ```
+    *(Presione Ctrl+C para salir de los logs, el contenedor seguirá corriendo).*
+
+3.  **Verificar el Estado:**
+    Para saber si el contenedor sigue activo:
+    ```bash
+    make docker-status
+    ```
+
+4.  **Detener el Contenedor:**
+    Para apagar y limpiar el contenedor cuando termine:
+    ```bash
+    make docker-stop
+    ```
+
+5.  **Validar su estructura de carpetas:**
     (Asegúrese de que su ruta local termine en la carpeta `data` que contiene `inputs`, `outputs` y `database`).
     ```bash
-    make docker-validate DATA="(ejemplo)C:\DatosMedicos\data\"
+    make docker-validate DATA="D:\DatosMedicos\data\"
     ```
 
-3.  **Ejecutar el proceso de clasificación:**
+6.  **Ejecutar el proceso de clasificación:**
     ```bash
-    make docker-execute DATA="(ejemplo)C:\DatosMedicos\data\"
+    make docker-execute DATA="D:\DatosMedicos\data\"
     ```
 
-4.  **Ver el resumen de la base de datos (Excel):**
+7.  **Ver el resumen de la base de datos (Excel):**
     ```bash
-    make docker-show DATA="(ejemplo)C:\DatosMedicos\data\"
+    make docker-show DATA="D:\DatosMedicos\data\"
     ```
 
 ### 📂 Consulta de Resultados
